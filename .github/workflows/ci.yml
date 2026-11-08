@@ -9,13 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        image: mongo:7
         ports: ["27017:27017"]
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     env:
       MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_ci
       AUTH_SECRET: ci-only-secret-not-used-in-production-123
@@ -29,6 +24,8 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Wait for MongoDB
+        run: for i in $(seq 1 60); do (echo > /dev/tcp/127.0.0.1/27017) 2>/dev/null && exit 0; sleep 2; done; echo "MongoDB did not start"; exit 1
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
@@ -41,13 +38,8 @@ jobs:
     if: github.event_name == 'pull_request'
     services:
       mongo:
-        image: mongo:8
+        image: mongo:7
         ports: ["27017:27017"]
-        options: >-
-          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     env:
       E2E_MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_test
       AUTH_SECRET: ci-only-secret-not-used-in-production-123
@@ -60,4 +52,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
+      - name: Wait for MongoDB
+        run: for i in $(seq 1 60); do (echo > /dev/tcp/127.0.0.1/27017) 2>/dev/null && exit 0; sleep 2; done; echo "MongoDB did not start"; exit 1
       - run: pnpm test:e2e
