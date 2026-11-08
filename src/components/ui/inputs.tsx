@@ -23,7 +23,7 @@ export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<H
 /** Label + control + hint + error, wired for accessibility. */
 export function Field({ label, htmlFor, hint, error, children, className, required, counter }: { label: string; htmlFor?: string; hint?: React.ReactNode; error?: string; children: React.ReactNode; className?: string; required?: boolean; counter?: React.ReactNode }) {
   return (
-    <div className={cn("grid gap-1.5", className)}>
+    <div className={cn("grid min-w-0 gap-1.5", className)}>
       <div className="flex items-baseline justify-between gap-3">
         <label htmlFor={htmlFor} className="text-sm font-semibold">
           {label}
@@ -47,7 +47,7 @@ export function Field({ label, htmlFor, hint, error, children, className, requir
 
 export function Panel({ title, description, children, className, actions }: { title?: string; description?: React.ReactNode; children: React.ReactNode; className?: string; actions?: React.ReactNode }) {
   return (
-    <section className={cn("rounded-[var(--radius)] border border-border bg-surface p-5 sm:p-6", className)}>
+    <section className={cn("min-w-0 rounded-[var(--radius)] border border-border bg-surface p-5 sm:p-6", className)}>
       {title || actions ? (
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -57,7 +57,7 @@ export function Panel({ title, description, children, className, actions }: { ti
           {actions}
         </div>
       ) : null}
-      <div className="grid gap-5">{children}</div>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5">{children}</div>
     </section>
   );
 }

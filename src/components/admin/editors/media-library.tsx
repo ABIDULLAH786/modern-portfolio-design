@@ -112,7 +112,7 @@ export function MediaLibrary({ items: initial, configured, usedBytes, capMb }: {
         <span className="ml-3">· Drag & drop files anywhere here</span>
       </p>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         {list.length ? (
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
             {list.map((m) => (
@@ -135,18 +135,20 @@ export function MediaLibrary({ items: initial, configured, usedBytes, capMb }: {
           <EmptyState icon={<Images />} title="No files yet" />
         )}
         {active ? (
-          <aside className="grid gap-4 rounded-[var(--radius)] border border-border bg-surface p-4 lg:sticky lg:top-20" aria-label="File details">
+          <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 rounded-[var(--radius)] border border-border bg-surface p-4 lg:sticky lg:top-20" aria-label="File details">
             <div className="flex items-start justify-between gap-2">
-              <h2 className="truncate font-semibold">{active.name}</h2>
-              <button type="button" onClick={() => setActive(null)} className="grid size-8 place-items-center rounded-lg text-muted hover:text-text" aria-label="Close details">
+              <h2 className="min-w-0 flex-1 truncate font-semibold" title={active.name}>
+                {active.name}
+              </h2>
+              <button type="button" onClick={() => setActive(null)} className="grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:text-text" aria-label="Close details">
                 <X className="size-4" />
               </button>
             </div>
             {active.kind === "image" ? (
               // eslint-disable-next-line @next/next/no-img-element -- preview
-              <img src={`${active.url}${active.url.includes("?") ? "&" : "?"}tr=w-640`} alt={active.alt} className="w-full rounded-xl" />
+              <img src={`${active.url}${active.url.includes("?") ? "&" : "?"}tr=w-640`} alt={active.alt} className="max-h-64 w-full rounded-xl bg-surface-2 object-contain" />
             ) : null}
-            <dl className="grid grid-cols-2 gap-2 text-sm">
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted">Size</dt>
               <dd>{formatBytes(active.bytes)}</dd>
               {active.width ? (
@@ -162,7 +164,7 @@ export function MediaLibrary({ items: initial, configured, usedBytes, capMb }: {
             </dl>
             {active.kind === "image" ? (
               <Field label="Alt text" htmlFor="m-alt" hint="Updates everywhere this image is used.">
-                <div className="flex gap-2">
+                <div className="flex min-w-0 gap-2">
                   <Input id="m-alt" value={alt} onChange={(e) => setAlt(e.target.value)} maxLength={200} />
                   <Button
                     size="sm"
