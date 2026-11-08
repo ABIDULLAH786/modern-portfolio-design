@@ -50,3 +50,6 @@ next-env.d.ts
 /playwright-report
 *.tmp.mjs
 .claude/settings.local.json
+
+# walkthrough videos (large binaries)
+videos/*.mp4

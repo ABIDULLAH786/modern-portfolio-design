@@ -16,7 +16,7 @@ export async function saveCategory(id: string | null, input: unknown): Promise<A
     const parsed = skillCategorySchema.safeParse(input);
     if (!parsed.success) return invalid(parsed.error);
     let doc;
-    if (id) doc = await SkillCategory.findByIdAndUpdate(objectId.parse(id), { $set: parsed.data }, { new: true }).lean<Raw>();
+    if (id) doc = await SkillCategory.findByIdAndUpdate(objectId.parse(id), { $set: parsed.data }, { returnDocument: "after" }).lean<Raw>();
     else {
       const last = await SkillCategory.findOne().sort({ order: -1 }).lean();
       doc = (await SkillCategory.create({ ...parsed.data, order: (last?.order ?? -1) + 1 })).toObject() as unknown as Raw;
@@ -65,7 +65,7 @@ export async function saveSkill(id: string | null, input: unknown): Promise<Acti
       if (!existing) return fail("Skill not found.");
       const moved = String(existing.categoryId) !== parsed.data.categoryId;
       const order = moved ? await Skill.countDocuments({ categoryId: parsed.data.categoryId }) : existing.order;
-      doc = await Skill.findByIdAndUpdate(id, { $set: { ...parsed.data, order } }, { new: true }).lean<Raw>();
+      doc = await Skill.findByIdAndUpdate(id, { $set: { ...parsed.data, order } }, { returnDocument: "after" }).lean<Raw>();
     } else {
       const order = await Skill.countDocuments({ categoryId: parsed.data.categoryId });
       doc = (await Skill.create({ ...parsed.data, order })).toObject() as unknown as Raw;

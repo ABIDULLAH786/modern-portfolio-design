@@ -10,7 +10,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
   return (
     <>
       <PageHeader title="Messages" description="Everything sent through your contact form." />
-      <Inbox key={`${status}|${q}|${messages.map((m) => m.id + m.status).join(",")}`} messages={messages} status={status} q={q} openId={typeof sp.id === "string" ? sp.id : null} />
+      <Inbox key={`${status}|${q}`} messages={messages} status={status} q={q} openId={typeof sp.id === "string" ? sp.id : null} />
     </>
   );
 }

@@ -20,7 +20,7 @@ type AnyModel = typeof Experience | typeof Service | typeof Testimonial;
 async function upsert<T>(model: AnyModel, id: string | null, data: Record<string, unknown>, map: (d: Raw) => T): Promise<ActionResult<T>> {
   let doc: Raw | null;
   if (id) {
-    doc = await (model as typeof Experience).findByIdAndUpdate(objectId.parse(id), { $set: data }, { new: true }).lean<Raw>();
+    doc = await (model as typeof Experience).findByIdAndUpdate(objectId.parse(id), { $set: data }, { returnDocument: "after" }).lean<Raw>();
   } else {
     const last = await (model as typeof Experience).findOne().sort({ order: -1 }).select("order").lean();
     doc = (await (model as typeof Experience).create({ ...data, order: (last?.order ?? -1) + 1 })).toObject() as unknown as Raw;

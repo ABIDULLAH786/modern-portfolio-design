@@ -12,10 +12,11 @@ function safeNext(next: unknown): string {
   return typeof next === "string" && next.startsWith("/admin") && !next.startsWith("//") ? next : "/admin";
 }
 
-export async function login(_prev: { error: string } | null, formData: FormData): Promise<{ error: string } | null> {
+export async function login(_prev: { error: string; email?: string } | null, formData: FormData): Promise<{ error: string; email?: string } | null> {
+  const email = String(formData.get("email") ?? "").slice(0, 120);
   try {
     await signIn("credentials", {
-      email: String(formData.get("email") ?? ""),
+      email,
       password: String(formData.get("password") ?? ""),
       redirectTo: safeNext(formData.get("next")),
     });
@@ -24,11 +25,11 @@ export async function login(_prev: { error: string } | null, formData: FormData)
     if (e instanceof CredentialsSignin) {
       if (e.code?.startsWith("locked")) {
         const mins = Number(e.code.split(":")[1] ?? 15) || 15;
-        return { error: `Too many attempts. Try again in ${mins} minute${mins === 1 ? "" : "s"}.` };
+        return { error: `Too many attempts. Try again in ${mins} minute${mins === 1 ? "" : "s"}.`, email };
       }
-      return { error: "Email or password is incorrect." };
+      return { error: "Email or password is incorrect.", email };
     }
-    if (e instanceof AuthError) return { error: "Login failed. Please try again." };
+    if (e instanceof AuthError) return { error: "Login failed. Please try again.", email };
     throw e; // NEXT_REDIRECT on success
   }
 }

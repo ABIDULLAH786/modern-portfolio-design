@@ -12,7 +12,7 @@ export async function updateProfile(input: unknown): Promise<ActionResult<Profil
   return adminAction("updateProfile", async () => {
     const parsed = profileSchema.safeParse(input);
     if (!parsed.success) return invalid(parsed.error);
-    const doc = await Profile.findByIdAndUpdate("profile", { $set: parsed.data }, { new: true, upsert: true }).lean<Record<string, unknown>>();
+    const doc = await Profile.findByIdAndUpdate("profile", { $set: parsed.data }, { returnDocument: "after", upsert: true }).lean<Record<string, unknown>>();
     // Games' JSON-LD + hero chips use the profile too.
     expire(TAGS.profile, TAGS.games);
     return { ok: true, data: toProfileDTO(doc ?? {}) };

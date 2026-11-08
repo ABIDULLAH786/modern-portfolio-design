@@ -14,12 +14,25 @@ import { relativeTime } from "@/lib/utils/text";
 import { updateMessages } from "@/server/actions/messages";
 
 type Status = "new" | "all" | "archived";
+
+/** Server list, but keep the message currently being read visible even if it left this folder. */
+function mergeKeepOpen(next: MessageDTO[], prev: MessageDTO[], openId: string): MessageDTO[] {
+  if (next.some((m) => m.id === openId)) return next;
+  const open = prev.find((m) => m.id === openId);
+  return open ? [open, ...next] : next;
+}
 type Op = "read" | "unread" | "archive" | "unarchive" | "delete";
 
 export function Inbox({ messages: initial, status, q, openId }: { messages: MessageDTO[]; status: Status; q: string; openId: string | null }) {
-  const [messages, setMessages] = useState(initial);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [openIdState, setOpenId] = useState<string | null>(openId);
+  const [messages, setMessages] = useState(initial);
+  // Keep local state in sync when the server sends a fresh list (same folder), without remounting.
+  const [prevInitial, setPrevInitial] = useState(initial);
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    setMessages(openIdState ? mergeKeepOpen(initial, messages, openIdState) : initial);
+  }
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState(q);
   const router = useRouter();
   const pathname = usePathname();
@@ -47,7 +60,8 @@ export function Inbox({ messages: initial, status, q, openId }: { messages: Mess
         : list.map((m) => (ids.includes(m.id) ? { ...m, status: op === "unread" ? "new" : op === "archive" ? "archived" : "read" } : m)),
     );
     const labels: Record<Op, string> = { read: "Marked as read", unread: "Marked as unread", archive: "Archived", unarchive: "Moved back to inbox", delete: "Deleted" };
-    const r = await run(() => updateMessages({ ids, action: op }), { success: quiet ? false : labels[op] });
+    // Opening a message marks it read quietly without a refresh, so it doesn't vanish from "New" while being read.
+    const r = await run(() => updateMessages({ ids, action: op }), { success: quiet ? false : labels[op], refresh: !quiet });
     if (!r.ok) setMessages(prev);
     setSelected(new Set());
     if (op === "delete" && open && ids.includes(open.id)) setOpenId(null);

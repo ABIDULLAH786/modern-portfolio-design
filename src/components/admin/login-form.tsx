@@ -13,11 +13,11 @@ export function LoginForm({ next }: { next: string }) {
     <form action={action} className="grid gap-4">
       <input type="hidden" name="next" value={next} />
       <Field label="Email" htmlFor="email">
-        <Input id="email" name="email" type="email" autoComplete="username" required autoFocus />
+        <Input id="email" name="email" type="email" autoComplete="username" required autoFocus={!state?.email} defaultValue={state?.email ?? ""} key={state?.email ?? ""} />
       </Field>
       <Field label="Password" htmlFor="password">
         <div className="relative">
-          <Input id="password" name="password" type={show ? "text" : "password"} autoComplete="current-password" required className="pr-11" />
+          <Input id="password" name="password" type={show ? "text" : "password"} autoComplete="current-password" required className="pr-11" autoFocus={!!state?.email} />
           <button type="button" onClick={() => setShow((s) => !s)} className="absolute top-1/2 right-2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted hover:text-text" aria-label={show ? "Hide password" : "Show password"}>
             {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>

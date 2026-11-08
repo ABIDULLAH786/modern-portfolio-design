@@ -122,7 +122,7 @@ export async function setGameFlag(input: unknown, flag: "published" | "featured"
   return adminAction("setGameFlag", async () => {
     const { id, value } = flagSchema.parse(input);
     if (flag !== "published" && flag !== "featured") return fail("Unknown flag");
-    const doc = await Game.findByIdAndUpdate(id, { $set: { [flag]: value } }, { new: true }).lean<Raw>();
+    const doc = await Game.findByIdAndUpdate(id, { $set: { [flag]: value } }, { returnDocument: "after" }).lean<Raw>();
     if (!doc) return fail("This game no longer exists.");
     expire(TAGS.games, TAGS.game(String(doc.slug)));
     return { ok: true, data: toGameDTO(doc) };
