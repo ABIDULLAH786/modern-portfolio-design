@@ -51,5 +51,3 @@ next-env.d.ts
 *.tmp.mjs
 .claude/settings.local.json
 
-# walkthrough videos (large binaries)
-videos/*.mp4

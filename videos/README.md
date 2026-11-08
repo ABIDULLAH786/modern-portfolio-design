@@ -2,7 +2,7 @@
 
 Screen recordings of every feature of the portfolio and its dashboard (1440×900, phone ones 390×844).
 Each video starts with a title card and shows a caption for every step.
-Recorded on a demo copy of the site; "(example)" items were created only for the recording.
+Previews are in `previews/` (animated WebP). Recorded on a demo copy of the site; "(example)" items were created only for the recording.
 
 | # | Video | Length | What it shows |
 |---|---|---|---|
