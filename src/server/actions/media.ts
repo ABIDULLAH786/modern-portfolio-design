@@ -159,3 +159,10 @@ export async function mediaRefFor(id: string): Promise<ActionResult<NonNullable<
     };
   });
 }
+
+export async function listMedia(kind?: "image" | "pdf"): Promise<ActionResult<MediaDTO[]>> {
+  return adminAction("listMedia", async () => {
+    const docs = await Media.find(kind ? { kind } : {}).sort({ createdAt: -1 }).limit(1000).lean<Raw[]>();
+    return { ok: true, data: docs.map(toMediaDTO) };
+  });
+}

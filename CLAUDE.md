@@ -31,14 +31,14 @@ A production-ready personal portfolio website for **Najeeb Ullah, Mobile Game De
 - **Auth:** Auth.js (NextAuth v5) with the Credentials provider. Single admin user stored in DB, password hashed with bcrypt.
 - **Validation:** Zod (shared between forms and server actions)
 - **Forms:** React Hook Form + `@hookform/resolvers/zod`
-- **Images:** Cloudinary (signed uploads) through a `MediaService` abstraction, so it can later be swapped for S3
+- **Images:** ImageKit (signed direct uploads, one sub-folder per kind/game; a single resume PDF) through a `MediaService` abstraction, so it can later be swapped for S3. (Changed from Cloudinary on 2026-11-08, see `docs/DECISIONS.md`.)
 - **Email:** Resend (contact form notifications)
 - **Animation:** Framer Motion (`motion`) for reveals; CSS for small hover effects
 - **Drag & drop reorder:** dnd-kit
 - **Rich text:** Markdown stored as a string, rendered with `react-markdown` + `rehype-sanitize`
 - **Icons:** lucide-react
 - **Testing:** Vitest (unit) + Playwright (e2e)
-- **Hosting:** Vercel (app) + MongoDB Atlas free tier + Cloudinary free tier
+- **Hosting:** Vercel (app) + MongoDB Atlas free tier + ImageKit free tier
 - **Package manager:** pnpm
 
 Before installing, check the current stable versions of each package. Do not pin to versions from memory.
@@ -79,7 +79,8 @@ Create these scripts in Phase 0 if they don't exist.
 - File names: `kebab-case.tsx` for components, `camelCase.ts` for utils, PascalCase component names.
 - Mongoose models live in `src/server/models/`, data-access functions in `src/server/queries/`, mutations in `src/server/actions/`.
 - Zod schemas live in `src/lib/validation/` and are imported by both the client and the server.
-- Wrap all DB reads used by public pages in `unstable_cache` / tagged fetch caching (see Architecture §7).
+- Wrap all DB reads used by public pages in `unstable_cache` / tagged fetch caching (see Architecture §7). Revalidate with `expire()` from `src/server/revalidate.ts`.
+- Next.js 16: route protection lives in `src/proxy.ts` (not middleware.ts). Read `node_modules/next/dist/docs/` before using unfamiliar Next APIs.
 - Use named exports, except for Next.js special files (`page.tsx`, `layout.tsx`...).
 - Write no `any`. Use `unknown` and narrow it.
 

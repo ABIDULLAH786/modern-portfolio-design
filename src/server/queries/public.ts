@@ -125,8 +125,4 @@ export const getPublishedTestimonials = unstable_cache(
   { tags: [TAGS.testimonials], revalidate: DAY },
 );
 
-/** Featured-first (optional) then manual order. */
-export function orderGames(games: GameDTO[], featuredFirst: boolean): GameDTO[] {
-  if (!featuredFirst) return games;
-  return [...games].sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order);
-}
+export { orderGames } from "@/lib/utils/orderGames";

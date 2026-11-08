@@ -36,6 +36,7 @@ const varMap: Array<[keyof ThemeTokens, string]> = [
   ["glass", "--glass"],
   ["glassStrong", "--glass-strong"],
   ["bgGlass", "--bg-glass"],
+  ["primaryText", "--primary-text"],
 ];
 
 /** Colour tokens only (used for the visitor light/dark alternate set). */

@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+    env:
+      MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_ci
+      AUTH_SECRET: ci-only-secret-not-used-in-production-123
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      EMAIL_TRANSPORT: log
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm seed
+      - run: pnpm build
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: check
+    if: github.event_name == 'pull_request'
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+    env:
+      E2E_MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_test
+      AUTH_SECRET: ci-only-secret-not-used-in-production-123
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e

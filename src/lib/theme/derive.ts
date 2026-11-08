@@ -66,6 +66,17 @@ export interface ThemeTokens extends ThemeBase {
   glass: string;
   glassStrong: string;
   bgGlass: string;
+  /** Primary adjusted (towards the text colour) until it reaches 4.5:1 on cards and background. */
+  primaryText: string;
+}
+
+/** Smallest mix of `color` towards `toward` that reaches `target` contrast on every background. */
+export function readableOn(color: string, toward: string, backgrounds: string[], target = 4.5): string {
+  for (let w = 1; w >= 0; w -= 0.05) {
+    const c = mix(color, toward, w);
+    if (backgrounds.every((b) => contrastRatio(c, b) >= target)) return c;
+  }
+  return toward;
 }
 
 export function deriveTokens(base: ThemeBase): ThemeTokens {
@@ -85,6 +96,7 @@ export function deriveTokens(base: ThemeBase): ThemeTokens {
     glass: withAlpha(base.surface, 0.72),
     glassStrong: withAlpha(base.surface, 0.85),
     bgGlass: withAlpha(base.bg, 0.7),
+    primaryText: readableOn(base.primary, base.text, [base.surface, base.bg, mix(base.surface, base.text, 0.9)]),
   };
 }
 
