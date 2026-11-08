@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm -v)",
+      "Bash(npm -v)",
+      "Bash(npm view *)",
+      "Bash(systemctl is-active *)",
+      "Bash(mongosh --quiet --eval 'db.runCommand\\({ping:1}\\)')",
+      "Bash(pnpm dlx *)",
+      "Bash(pnpm add *)",
+      "Bash(rm -f src/app/favicon.ico public/*.svg)",
+      "Bash(node -e ' *)",
+      "Bash(pnpm seed *)",
+      "Bash(node -e 'const {loadEnvConfig}=require\\(\"@next/env\"\\);loadEnvConfig\\(process.cwd\\(\\)\\);console.log\\(JSON.stringify\\(process.env.ADMIN_PASSWORD\\), process.env.ADMIN_EMAIL\\)')",
+      "Bash(ADMIN_PASSWORD='Test-Admin-Pass-2026' pnpm create-admin)",
+      "Bash(mongosh --quiet najeeb_portfolio --eval 'printjson\\(db.profiles.findOne\\({}, {cv:1}\\)\\)')",
+      "Bash(pnpm exec *)",
+      "Bash(NODE_OPTIONS=--max-old-space-size=8192 timeout 300 pnpm exec tsc --noEmit --extendedDiagnostics)",
+      "Bash(git add *)"
+    ]
+  }
+}
