@@ -1,6 +1,7 @@
 "use client";
 
-import { Copy, ExternalLink, FileText, Images, Loader2, Trash2, Upload, X } from "lucide-react";
+import { ArrowRight, Copy, ExternalLink, FileText, Images, Loader2, Trash2, Upload, X } from "lucide-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { uploadToImageKit } from "@/components/admin/upload";
@@ -8,7 +9,7 @@ import { useAction } from "@/components/admin/use-action";
 import { Button, buttonClass } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm";
 import { EmptyState, Field, Input } from "@/components/ui/inputs";
-import type { MediaDTO } from "@/lib/types";
+import type { MediaDTO, MediaUsage } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { formatBytes } from "@/lib/utils/text";
 import { deleteMedia, mediaUsage, registerUpload, updateAlt } from "@/server/actions/media";
@@ -18,7 +19,7 @@ export function MediaLibrary({ items: initial, configured, usedBytes, capMb }: {
   const [filter, setFilter] = useState<"all" | "image" | "pdf">("all");
   const [q, setQ] = useState("");
   const [active, setActive] = useState<MediaDTO | null>(null);
-  const [usage, setUsage] = useState<string[] | null>(null);
+  const [usage, setUsage] = useState<MediaUsage[] | null>(null);
   const [alt, setAlt] = useState("");
   const [uploading, setUploading] = useState<{ name: string; pct: number } | null>(null);
   const [drag, setDrag] = useState(false);
@@ -203,11 +204,19 @@ export function MediaLibrary({ items: initial, configured, usedBytes, capMb }: {
               {usage === null ? (
                 <Loader2 className="size-4 animate-spin text-muted" />
               ) : usage.length ? (
-                <ul className="list-disc pl-5 text-sm text-muted">
-                  {usage.map((u) => (
-                    <li key={u}>{u}</li>
-                  ))}
-                </ul>
+                <>
+                  <ul className="grid gap-1">
+                    {usage.map((u) => (
+                      <li key={u.label}>
+                        <Link href={u.href} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-primary-text hover:bg-surface-2">
+                          <span className="min-w-0 truncate">{u.label}</span>
+                          <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-1 text-xs text-muted">Remove the image there (and save), then come back to delete it.</p>
+                </>
               ) : (
                 <p className="text-sm text-muted">Not used anywhere.</p>
               )}

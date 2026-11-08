@@ -198,3 +198,9 @@ export interface MediaDTO {
   purpose: string;
   createdAt: string;
 }
+
+/** A place where a media file is used, with a link to its editor. */
+export interface MediaUsage {
+  label: string;
+  href: string;
+}

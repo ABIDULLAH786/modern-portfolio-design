@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { env } from "@/env";
 import { MEDIA_KINDS, folderFor, kindRules, type MediaKind } from "@/lib/media-kinds";
-import type { ActionResult, MediaDTO, MediaRef, ResumeFile } from "@/lib/types";
+import type { ActionResult, MediaDTO, MediaRef, MediaUsage, ResumeFile } from "@/lib/types";
 import { toMediaDTO } from "@/server/dto";
 import { Game, Media, Profile, Settings, Testimonial } from "@/server/models";
 import { ALL_TAGS, TAGS, expire } from "@/server/revalidate";
@@ -112,12 +112,12 @@ export async function removeResume(): Promise<ActionResult> {
   });
 }
 
-export async function mediaUsage(id: string): Promise<ActionResult<string[]>> {
+export async function mediaUsage(id: string): Promise<ActionResult<MediaUsage[]>> {
   return adminAction("mediaUsage", async () => ({ ok: true, data: await findUsage(z.string().min(1).parse(id)) }));
 }
 
-export async function deleteMedia(id: string): Promise<ActionResult<{ deleted: boolean; usedIn: string[] }>> {
-  return adminAction<{ deleted: boolean; usedIn: string[] }>("deleteMedia", async () => {
+export async function deleteMedia(id: string): Promise<ActionResult<{ deleted: boolean; usedIn: MediaUsage[] }>> {
+  return adminAction<{ deleted: boolean; usedIn: MediaUsage[] }>("deleteMedia", async () => {
     const mid = z.string().regex(/^[a-f0-9]{24}$/i).parse(id);
     const doc = await Media.findById(mid);
     if (!doc) return fail("That file no longer exists.");
