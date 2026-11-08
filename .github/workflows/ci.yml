@@ -11,6 +11,11 @@ jobs:
       mongo:
         image: mongo:8
         ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     env:
       MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_ci
       AUTH_SECRET: ci-only-secret-not-used-in-production-123
@@ -38,6 +43,11 @@ jobs:
       mongo:
         image: mongo:8
         ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     env:
       E2E_MONGODB_URI: mongodb://127.0.0.1:27017/najeeb_portfolio_test
       AUTH_SECRET: ci-only-secret-not-used-in-production-123
